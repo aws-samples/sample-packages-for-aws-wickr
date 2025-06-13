@@ -1,0 +1,4 @@
+cdk.out
+*.md
+*.json
+.prettierrc
