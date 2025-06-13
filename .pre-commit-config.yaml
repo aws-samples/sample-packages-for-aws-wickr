@@ -1,0 +1,34 @@
+---
+minimum_pre_commit_version: 3.2.0
+default_stages: [pre-commit]
+default_install_hook_types: [pre-commit, commit-msg]
+fail_fast: true
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0  # Released Oct 7, 2023
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+
+  - repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.33.0  # Released Nov 9, 2023
+    hooks:
+      - id: yamllint
+
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: 'v3.1.0'  # Released Jan 12, 2024
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        args: []
+
+  - repo: local
+    hooks:
+      - id: pre-commit-last-run
+        name: pre-commit-last-run
+        entry: touch
+        args: [".pre-commit-last-run"]
+        language: system
+        types: [file]
+        pass_filenames: false

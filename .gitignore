@@ -1,0 +1,13 @@
+.DS_Store
+*.js
+!jest.config.js
+*.d.ts
+node_modules
+build
+dist
+# CDK asset staging directory
+.cdk.staging
+cdk.out
+
+wickr-config.json
+.pre-commit-last-run
