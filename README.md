@@ -1,11 +1,6 @@
-## My Project
+## Sample Packages for AWS Wickr
 
-TODO: Fill this README out!
-
-Be sure to:
-
-* Change the title in this README
-* Edit your repository description on GitHub
+This repository contains sample packages related to AWS Wickr and Wickr Enterprise.
 
 ## Security
 
