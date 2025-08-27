@@ -7,6 +7,7 @@ import { S3Stack } from '../lib/stacks/s3'
 import { RdsStack } from '../lib/stacks/rds'
 import { AcmStack } from '../lib/stacks/acm'
 import { AlbStack } from '../lib/stacks/alb'
+import { NlbStack } from '../lib/stacks/nlb'
 import { KotsStack } from '../lib/stacks/kots'
 import { getEnvironmentConfig } from '../lib/util'
 
@@ -37,6 +38,11 @@ const albStack = new AlbStack(app, `WickrAlb${suffix}`, environmentConfig, {
   certificate: acmStack.certificate,
 })
 
+const nlbStack = environmentConfig.enableCallingIngress ? new NlbStack(app, `WickrNlb${suffix}`, environmentConfig, {
+    vpc: vpcStack.vpc,
+    certificate: acmStack.certificate,
+  }) : undefined
+
 const rdsStack = new RdsStack(app, `WickrRds${suffix}`, environmentConfig, {
   vpc: vpcStack.vpc,
   key: kmsStack.key,
@@ -48,6 +54,7 @@ const eksStack = new EksStack(app, `WickrEks${suffix}`, environmentConfig, {
   bucket: s3Stack.bucket,
   database: rdsStack.cluster,
   alb: albStack.alb,
+  nlb: nlbStack?.nlb
 })
 
 if (environmentConfig.autoDeployWickr) {

@@ -25,5 +25,6 @@
   "wickr/s3:expireAfterDays": 1095,
   "wickr/eks:clusterVersion": "1.30",
   "wickr/autoDeployWickr": true,
-  "wickr/kms:kmsKey": null
+  "wickr/kms:kmsKey": null,
+  "wickr/enableCallingIngress": true
 }

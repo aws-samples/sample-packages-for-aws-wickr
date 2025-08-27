@@ -32,4 +32,5 @@ export interface IWickrEnvironmentConfig {
   stackSuffix: string
   autoDeployWickr: boolean
   importedKmsKeyArn: string
+  enableCallingIngress: boolean
 }
