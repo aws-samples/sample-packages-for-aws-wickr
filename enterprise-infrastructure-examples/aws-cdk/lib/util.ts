@@ -86,5 +86,6 @@ export function getEnvironmentConfig(app: App): IWickrEnvironmentConfig {
     stackSuffix: app.node.tryGetContext('wickr/stackSuffix') || '',
     autoDeployWickr: parseBoolean(app.node.tryGetContext('wickr/autoDeployWickr'), true),
     importedKmsKeyArn: app.node.tryGetContext('wickr/kms:kmsKey'),
+    enableCallingIngress: app.node.tryGetContext('wickr/enableCallingIngress') || false,
   }
 }

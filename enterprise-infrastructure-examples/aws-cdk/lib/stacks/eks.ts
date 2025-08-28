@@ -15,7 +15,7 @@ import { IKey } from 'aws-cdk-lib/aws-kms'
 import { IBucket } from 'aws-cdk-lib/aws-s3'
 import { Construct } from 'constructs'
 import { EksNodeGroup } from '../constructs/nodegroup'
-import { ApplicationLoadBalancer } from 'aws-cdk-lib/aws-elasticloadbalancingv2'
+import { ApplicationLoadBalancer, NetworkLoadBalancer } from 'aws-cdk-lib/aws-elasticloadbalancingv2'
 import { DatabaseCluster } from 'aws-cdk-lib/aws-rds'
 import { CLUSTER_VERSION } from '../constants/versions'
 import { ClusterAutoScaler } from '../constructs/cluster-autoscaler'
@@ -28,6 +28,7 @@ export interface EksStackProps extends cdk.StackProps {
   bucket: IBucket
   database: DatabaseCluster
   alb: ApplicationLoadBalancer
+  nlb?: NetworkLoadBalancer
 }
 
 export class EksStack extends cdk.Stack {
@@ -43,7 +44,6 @@ export class EksStack extends cdk.Stack {
     this.config = config
     const namespace = config.namespace
     this.clusterAdmin = new Role(this, 'WickrEksClusterAdmin', {
-      // TODO: Make configurable
       assumedBy: new AccountRootPrincipal(),
     })
 
@@ -169,6 +169,13 @@ export class EksStack extends cdk.Stack {
     callingSg.addIngressRule(ec2.Peer.anyIpv6(), ec2.Port.udpRange(16384, 19999), 'Calling VOIP Traffic')
     callingSg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443), 'Calling TCP Proxy')
     callingSg.addIngressRule(ec2.Peer.anyIpv6(), ec2.Port.tcp(443), 'Calling TCP Proxy')
+
+    // sg rules calling ingress
+    if (this.props.nlb) {
+      callingSg.connections.allowFrom(this.props.nlb!, ec2.Port.tcp(8443), 'Allow tcp traffic from NLB')
+      callingSg.connections.allowFrom(this.props.nlb!, ec2.Port.udp(16384), 'Allow udp traffic from NLB')
+      callingSg.connections.allowFrom(this.props.nlb!, ec2.Port.tcp(443), 'Allow https traffic from NLB')
+    }
 
     return new EksNodeGroup(this, 'CallingNodeGroup', {
       cluster,
