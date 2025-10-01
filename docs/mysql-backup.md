@@ -4,13 +4,13 @@ This is the instructions to backup and restore Wickr Enterprise internal databas
 
 Overall steps
 
-1. Put server offline
-    1. When Enterprise 6.58.x is deployed, in KOTS admin console
-    2. Check box “Database Upgrade Confirmation”
-    3. Save the config change then deploy
+1. Put server offline, by deploying following
+    1. Check box “Database Upgrade Confirmation”
+        1. When Enterprise 6.58.x is deployed, in KOTS admin console, Config
+    2. Save the config change then deploy
 2. Backup DB
 3. Migrate to MySQL 8, by deploying Ent 6.62.x
-    1. Check for update if preflight check failed
+    1. Re "Check for update" if preflight check failed at database backup
     2. Ingress/server will be back online along with the upgrade
 4. Rollback and restore (only if needed)
 
@@ -20,18 +20,18 @@ In Embedded Clusters the namespace is `kotsadm`, so replace `-n wickr` with `-n 
 
 ## Backup
 
-When kubectl has access to the cluster
+Do not Backup without putting server offline. When kubectl has access to the cluster
 
 * Export DB Dump File
 
     ```bash
     kubectl exec mysql-primary-0 -c mysql -n wickr \
-    -- mysqldump \
-        -uroot \
-        -p$MYSQL_ROOT_PASSWORD \
-        --single-transaction \
-        --routines wickrdb \
-        > ./wickrdb_$(date +%Y.%-m.%-d-%H:%M).sql
+      -- bash -c 'mysqldump \
+                    -uroot \
+                    -p$MYSQL_ROOT_PASSWORD \
+                    --single-transaction \
+                    --routines wickrdb' \
+      > ./wickrdb_$(date +%Y.%-m.%-d-%H:%M).sql
     ```
 
 ## Restore
@@ -54,10 +54,8 @@ When kubectl has access to the cluster
 
     ```bash
     kubectl exec mysql-primary-0 -c mysql -n wickr \
-    -- mysql \
-        -uroot \
-        -p$MYSQL_ROOT_PASSWORD wickrdb \
-        < ./wickrdb_date.sql
+      -- bash -c 'mysql -uroot -p$MYSQL_ROOT_PASSWORD wickrdb' \
+      < ./wickrdb_date.sql
     ```
 
   * Rollback to the version: First installation/upgrade to 6.58.1 (server will be online)
