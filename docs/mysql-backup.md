@@ -4,13 +4,13 @@ This is the instructions to backup and restore Wickr Enterprise internal databas
 
 Overall steps
 
-1. Put server offline, by deploying following
-    1. Check box “Database Upgrade Confirmation”
-        1. When Enterprise 6.58.x is deployed, in KOTS admin console, Config
+1. Follow these steps to put server offline
+    1. In the KOTS admin console config, check box “Database Upgrade Confirmation”
+        1. This will only be visible if 6.58.x is deployed
     2. Save the config change then deploy
 2. Backup DB
 3. Migrate to MySQL 8, by deploying Ent 6.62.x
-    1. Re "Check for update" if preflight check failed at database backup
+    1. Click "Check for update" if preflight check failed at database backup
     2. Ingress/server will be back online along with the upgrade
 4. Rollback and restore (only if needed)
 
