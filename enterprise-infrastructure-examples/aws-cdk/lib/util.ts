@@ -87,5 +87,6 @@ export function getEnvironmentConfig(app: App): IWickrEnvironmentConfig {
     autoDeployWickr: parseBoolean(app.node.tryGetContext('wickr/autoDeployWickr'), true),
     importedKmsKeyArn: app.node.tryGetContext('wickr/kms:kmsKey'),
     enableCallingIngress: app.node.tryGetContext('wickr/enableCallingIngress') || false,
+    replicatedChannel: app.node.tryGetContext('wickr/replicatedChannel') || '',
   }
 }

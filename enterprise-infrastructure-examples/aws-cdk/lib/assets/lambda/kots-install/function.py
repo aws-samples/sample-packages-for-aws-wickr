@@ -18,6 +18,7 @@ cluster_name = os.getenv('CLUSTER_NAME')
 kots_secret_name = os.getenv('KOTS_SECRET_NAME')
 license_bucket = os.getenv('LICENSE_BUCKET')
 license_key = os.getenv('LICENSE_KEY')
+replicated_channel = os.getenv('REPLICATED_CHANNEL')
 ca_bucket = os.getenv('CA_BUCKET')
 ca_key = os.getenv('CA_KEY')
 stack_suffix = os.getenv('STACK_SUFFIX', '')
@@ -50,6 +51,22 @@ def get_stack_output_value(stack_name, output_key, default=None):
 def download_kots_license():
     with open(kots_license_path, 'wb') as data:
         s3_client.download_fileobj(license_bucket, license_key, data)
+
+def get_replicated_channel():
+    global replicated_channel
+ 
+    if not replicated_channel:
+        try:
+            with open(kots_license_path, "r") as file_object:
+                # PyYAML lib is better but needs another LambdaLayer
+                for line in file_object:
+                    if 'channelName: ' in line:
+                        replicated_channel = line.split(':')[1].strip().strip('"')
+                        break
+ 
+        except Exception as e:
+            raise Exception(f'Error: get_replicated_channel: Caught {type(e)}: {e}')
+    print(f'Replicated channel: {replicated_channel}')
 
 def get_kots_ca():
     obj = s3_client.get_object(Bucket=ca_bucket, Key=ca_key)
@@ -165,7 +182,7 @@ def get_kube_config(cluster, role_arn):
 def kots_install(admin_password, kubeconfig):
     try:
         cmd = ['kubectl',
-               'kots', 'install', 'wickr-enterprise-ha',
+               'kots', 'install', f'wickr-enterprise-ha/{replicated_channel}',
                '--shared-password', admin_password,
                '--license-file', kots_license_path,
                '--config-values', kots_config_path,
@@ -181,8 +198,8 @@ def kots_install(admin_password, kubeconfig):
 def install_kots():
     # A hack to get around lambda size limiation
     try:
-        kots_version = '1.108.12'
-        sha256sum = 'ef861e5f60da31ee48121c6974aa60cf846653cf34f4155c3d54dcd55cb0f5ad'
+        kots_version = '1.128.2'
+        sha256sum = '384075c96d2974ee01b09c4bd96888d836099a901922a4c28e83067d7f678676'
 
         kots = 'kots_linux_amd64.tar.gz'
         kots_path = f'/tmp/{kots}'
@@ -201,7 +218,7 @@ def install_kots():
         kots_request.release_conn()
 
         if sha256.hexdigest() != sha256sum:
-            raise Exception('Checksum does not match!')
+            raise Exception(f'Checksum does not match! Expected {sha256sum}, got {sha256.hexdigest()}')
 
         with tarfile.open(kots_path) as fh:
             fh.extract('kots', '/tmp')
@@ -211,6 +228,15 @@ def install_kots():
     except Exception as e:
         raise Exception(f'Error: running install_kots: Caught {type(e)}: {e}')
 
+def upgrade_kots(kubeconfig):
+    # kubectl kots admin-console upgrade -n wickr
+    try:
+        cmd = ['kubectl', 'kots', 'admin-console', 'upgrade',
+               '--namespace', 'wickr',
+               '--kubeconfig', kubeconfig]
+        subprocess.run(cmd, check=True)
+    except subprocess.CalledProcessError as e:
+        print(f'Error: running upgrade_kots: Caught {type(e)}: {e}')
 
 def main(event, context):
     print('Event: ' + str(event))
@@ -219,12 +245,19 @@ def main(event, context):
     clusters = get_cluster_list()
     for cluster in clusters:
         if cluster == cluster_name:
+            kubeconfig = get_kube_config(cluster, cluster_role_arn)
+
             download_kots_license()
+            get_replicated_channel()
+
             parse_kots_config()
+
             install_kots()
+            upgrade_kots(kubeconfig)
+
             kots_install(
                 get_secret(kots_secret_name),
-                get_kube_config(cluster, cluster_role_arn)
+                kubeconfig
             )
             break
     return

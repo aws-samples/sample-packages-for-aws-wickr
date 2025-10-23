@@ -270,6 +270,7 @@ If everything is set up correctly, you will be able to run `mysql -u$MYSQL_USER 
 | `wickr/alb:disableIpv6` | (Optional) Sets the ALB IP address type to IPv4. Default is dualstack | false |
 | `wickr/alb:privateAddress` | (Optional) Places the ALB in private subnets. Default is public subnets. Note: This does not change the ALB scheme to be internal. | false |
 | `wickr/enableCallingIngress` | Adds support for calling ingress via NLB | false |
+| `wickr/replicatedChannel` | (Optional) Override Replicated Channel | '' |
 
 ## Destroying Resources
 

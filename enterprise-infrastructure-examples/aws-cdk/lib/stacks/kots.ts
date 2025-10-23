@@ -98,6 +98,7 @@ export class KotsStack extends Stack {
         KOTS_SECRET_NAME: secretName,
         LICENSE_BUCKET: this.licenseAsset.s3BucketName,
         LICENSE_KEY: this.licenseAsset.s3ObjectKey,
+        REPLICATED_CHANNEL: config.replicatedChannel,
         CA_BUCKET: this.caAsset.s3BucketName,
         CA_KEY: this.caAsset.s3ObjectKey,
         STACK_SUFFIX: config.stackSuffix,
