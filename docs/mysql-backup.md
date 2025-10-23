@@ -10,7 +10,10 @@ Overall steps
     2. Save the config change then deploy
 2. Backup DB
 3. Migrate to MySQL 8, by deploying Ent 6.62.x
-    1. Click "Check for update" if preflight check failed at database backup
+    1. If preflight check failed at database backup
+        1. In the KOTS admin console, Version history, edit config of 6.62.x
+        2. Check box “Database Backed Up”
+        3. Save the config change then deploy
     2. Ingress/server will be back online along with the upgrade
 4. Rollback and restore (only if needed)
 
