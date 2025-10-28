@@ -33,4 +33,5 @@ export interface IWickrEnvironmentConfig {
   autoDeployWickr: boolean
   importedKmsKeyArn: string
   enableCallingIngress: boolean
+  replicatedChannel: string
 }

@@ -26,5 +26,6 @@
   "wickr/eks:clusterVersion": "1.30",
   "wickr/autoDeployWickr": true,
   "wickr/kms:kmsKey": null,
-  "wickr/enableCallingIngress": false
+  "wickr/enableCallingIngress": false,
+  "wickr/replicatedChannel": null
 }
