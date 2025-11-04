@@ -4,14 +4,13 @@ This is the instructions to backup and restore Wickr Enterprise internal databas
 
 Overall steps
 
-1. Follow these steps to put server offline
-    1. In the KOTS admin console config, check box “Database Upgrade Confirmation”
-        1. This will only be visible if 6.58.x is deployed
+1. Follow these steps to put server **offline**
+    1. In the KOTS admin console config, check box “Database Upgrade Confirmation” (only on 6.58.x)
     2. Save the config change then deploy
 2. Backup DB
 3. Migrate to MySQL 8, by deploying Ent 6.62.x
     1. If preflight check failed at database backup
-        1. In the KOTS admin console, Version history, edit config of 6.62.x
+        1. In the KOTS admin console, edit (wrench icon) the config of version (6.62.x) you try to deploy
         2. Check box “Database Backed Up”
         3. Save the config change then deploy
     2. Ingress/server will be back online along with the upgrade
@@ -40,25 +39,39 @@ Do not Backup without putting server offline. When kubectl has access to the clu
 ## Restore
 
 * Restore MySQL to Clean State (only if rollback from database upgrade)
-  * Delete mysql statefulset
+  * Delete mysql statefulsets
 
     `kubectl delete statefulset -n wickr mysql-primary mysql-secondary`
-  * Delete mysql PVC
+  * Delete mysql PVCs
 
     `kubectl delete pvc -n wickr data-mysql-primary-0 data-mysql-secondary-0`
-    * Rollback Wickr Enterprise to 6.58.1 in KOTS admin console or CLI
-      * In KOTS admin console → Version history
-      * There will be two versions of 6.58.1 in version history
-        * Config change that enables “Database Upgrade Confirmation” (server will be offline)
-        * First installation/upgrade to 6.58.1 (server will be online)
-      * Rollback to the version: Config change that enables “Database Upgrade Confirmation”
+  * Rollback Wickr Enterprise to 6.58.x in KOTS admin console or CLI
+    * In KOTS admin console → Version history
+    * Rollback to 6.58.x that enables “Database Upgrade Confirmation”
+      * To check the config of previously deployed version, click "Edit config" (wrench icon)
 
 * Import Dump File Back
 
     ```bash
-    kubectl exec mysql-primary-0 -c mysql -n wickr \
+    kubectl exec -i mysql-primary-0 -c mysql -n wickr \
       -- bash -c 'mysql -uroot -p$MYSQL_ROOT_PASSWORD wickrdb' \
       < ./wickrdb_date.sql
     ```
 
-  * Rollback to the version: First installation/upgrade to 6.58.1 (server will be online)
+  * Follow these steps to bring server **online**
+    * In the KOTS admin console config, uncheck box “Database Upgrade Confirmation” (only on 6.58.x)
+    * Save the config change then deploy
+
+---
+
+## Reset rabbitmq
+
+If rabbitmq is not healthy after rollback, try
+
+* Delete rabbitmq statefulset
+
+    `kubectl delete statefulset -n wickr rabbitmq`
+* Delete rabbitmq PVCs (all "data-rabbitmq-*")
+
+    `kubectl delete pvc -n wickr data-rabbitmq-0 data-rabbitmq-1 data-rabbitmq-2`
+* Redeploy (currently deployed version) in KOTS admin console
