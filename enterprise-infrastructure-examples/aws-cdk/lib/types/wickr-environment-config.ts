@@ -1,4 +1,5 @@
 import { Duration, RemovalPolicy } from 'aws-cdk-lib'
+import { RDS_MYSQL_VERSION } from '../constants'
 
 export interface IWickrEnvironmentConfig {
   licensePath: string
@@ -11,6 +12,7 @@ export interface IWickrEnvironmentConfig {
   rdsReaderCount: number
   rdsDeletionProtection: boolean
   rdsRetention: Duration
+  rdsMySqlVersion: keyof typeof RDS_MYSQL_VERSION
   vpcCidr: string
   hostedZoneId: string
   zoneName: string

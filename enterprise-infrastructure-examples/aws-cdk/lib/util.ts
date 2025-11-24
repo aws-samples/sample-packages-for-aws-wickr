@@ -70,6 +70,7 @@ export function getEnvironmentConfig(app: App): IWickrEnvironmentConfig {
     rdsRemovalPolicy: app.node.tryGetContext('wickr/rds:removalPolicy') || 'snapshot',
     rdsDeletionProtection: parseBoolean(app.node.tryGetContext('wickr/rds:deletionProtection'), true),
     rdsRetention: Duration.days(parseInt(app.node.tryGetContext('wickr/rds:backupRetentionDays')) || 7),
+    rdsMySqlVersion: app.node.tryGetContext('wickr/rds:mySqlVersion') || '5.7',
     vpcCidr: app.node.tryGetContext('wickr/vpc:cidr'),
     hostedZoneId: app.node.tryGetContext('wickr/route53:hostedZoneId'),
     zoneName: app.node.tryGetContext('wickr/route53:hostedZoneName'),

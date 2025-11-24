@@ -12,6 +12,7 @@
   "wickr/rds:readerCount": 1,
   "wickr/rds:instanceType": "r6g.xlarge",
   "wickr/rds:backupRetentionDays": 14,
+  "wickr/rds:mySqlVersion": "8.0",
   "wickr/eks:defaultCapacity": 3,
   "wickr/eks:defaultCapacityCalling": 2,
   "wickr/eks:instanceTypes": "m5.2xlarge",

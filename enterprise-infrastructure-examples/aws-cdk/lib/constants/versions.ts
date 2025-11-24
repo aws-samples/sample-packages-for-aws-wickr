@@ -6,6 +6,7 @@ import { KubectlV28Layer } from '@aws-cdk/lambda-layer-kubectl-v28'
 import { KubectlV29Layer } from '@aws-cdk/lambda-layer-kubectl-v29'
 import { KubectlV30Layer } from '@aws-cdk/lambda-layer-kubectl-v30'
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31'
+import { AuroraMysqlEngineVersion } from 'aws-cdk-lib/aws-rds'
 
 export interface ClusterVersion {
   kubernetesVersion: KubernetesVersion
@@ -50,4 +51,9 @@ export const CLUSTER_VERSION: { [version: string]: ClusterVersion } = {
     albControllerVersion: AlbControllerVersion.V2_8_2,
     nodeGroupReleaseVersion: '1.30.0-ca9b9399',
   },
+}
+
+export const RDS_MYSQL_VERSION = {
+  "5.7": AuroraMysqlEngineVersion.VER_2_11_4, // 5.7.mysql_aurora.2.11.4
+  "8.0": AuroraMysqlEngineVersion.VER_3_08_0, // 8.0.mysql_aurora.3.08.0
 }

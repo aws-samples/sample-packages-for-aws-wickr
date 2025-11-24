@@ -13,6 +13,7 @@ import {
 } from 'aws-cdk-lib/aws-rds'
 import { Construct } from 'constructs'
 import { IWickrEnvironmentConfig } from '../types/wickr-environment-config'
+import { RDS_MYSQL_VERSION } from '../constants'
 
 export interface RdsStackProps extends cdk.StackProps {
   key: IKey
@@ -27,6 +28,10 @@ export class RdsStack extends cdk.Stack {
 
   constructor(scope: Construct, id: string, config: IWickrEnvironmentConfig, props: RdsStackProps) {
     super(scope, id, props)
+
+    if (!RDS_MYSQL_VERSION[config.rdsMySqlVersion]) {
+      throw new Error(`Unsupported RDS MySQL version: ${config.rdsMySqlVersion}, supported versions: ${Object.keys(RDS_MYSQL_VERSION)}`)
+    }
 
     const instanceType: InstanceType = new InstanceType(config.rdsInstanceType || this.DEFAULT_INSTANCE_TYPE)
     const instanceProps: ProvisionedClusterInstanceProps = {
@@ -44,7 +49,7 @@ export class RdsStack extends cdk.Stack {
 
     this.cluster = new DatabaseCluster(this, 'Db', {
       engine: DatabaseClusterEngine.auroraMysql({
-        version: AuroraMysqlEngineVersion.VER_2_11_4, // 5.7.mysql_aurora.2.11.4
+        version: RDS_MYSQL_VERSION[config.rdsMySqlVersion]
       }),
       parameters: {
         tls_version: 'tlsv1.2',

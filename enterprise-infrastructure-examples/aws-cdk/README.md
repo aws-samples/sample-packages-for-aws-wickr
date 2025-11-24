@@ -256,6 +256,7 @@ If everything is set up correctly, you will be able to run `mysql -u$MYSQL_USER 
 | `wickr/rds:readerCount` | Number of reader instances to create in the RDS cluster | 1 |
 | `wickr/rds:instanceType` | Instance type to use for RDS instances | r6g.xlarge |
 | `wickr/rds:backupRetentionDays` | Number of days to retain backups | 14 |
+| `wickr/rds:mySqlVersion` | MySQL version (5.7 or 8.0) | 8.0 |
 | `wickr/eks:namespace` | Default namespace for Wickr services in EKS | wickr |
 | `wickr/eks:defaultCapacity` | Number of EKS worker nodes for Messaging infrastructure | 3 |
 | `wickr/eks:defaultCapacityCalling` | Number of EKS worker nodes for Calling infrastructure | 2 |
