@@ -1,0 +1,7 @@
+.DS_Store
+*.js
+!jest.config.js
+*.d.ts
+node_modules
+build
+dist
